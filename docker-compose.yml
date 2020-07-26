@@ -1,0 +1,54 @@
+version: "2.3"
+
+services:
+    postgresql:
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: pipe
+            POSTGRES_PASSWORD: "123456"
+            TZ: Asia/Tokyo
+        ports:
+            - 5432:5432
+        volumes:
+            - ./volumes/postgresql/data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U pipe"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+    rabbitmq:
+        image: "rabbitmq:3-management"
+        environment:
+            - RABBITMQ_ERLANG_COOKIE='secret_cookie'
+        hostname: rabbitmq1
+        tty: true
+        build:
+            context: ./rabbitmq
+        volumes:
+            - ./rabbitmq/etc/enabled_plugins:/etc/rabbitmq/enabled_plugins
+            - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+            - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+            - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+            - ./rabbitmq/logs:/var/log/rabbitmq/log
+        ports:
+            - 5672:5672
+            - 15672:15672
+        command:  bash -c "sleep 3; rabbitmq-server;"
+
+    account-service:
+        image: account-service
+        build:
+            context: ./account-service
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/account
+            SPRING_DATASOURCE_USERNAME: pipe
+            SPRING_DATASOURCE_PASSWORD: "123456"
+        ports:
+            - 9000:8080
+        depends_on:
+            - postgresql
+
+networks:
+    default:
+        external:
+            name: test

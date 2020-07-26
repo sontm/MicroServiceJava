@@ -1,0 +1,2 @@
+FROM rabbitmq:3-management
+RUN rabbitmq-plugins enable --offline rabbitmq_management rabbitmq_web_dispatch rabbitmq_management_agent rabbitmq_mqtt rabbitmq_federation_management rabbitmq_stomp

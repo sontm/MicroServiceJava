@@ -1,0 +1,29 @@
+package com.yamastack.hibertest.controller;
+
+import com.yamastack.hibertest.entity.Person;
+import com.yamastack.hibertest.service.PersonService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class PersonController {
+
+    @Autowired
+    PersonService servicePerson;
+
+    @GetMapping("/persons")
+    public List<Person> getAll() {
+        List<Person> ret =  servicePerson.getAllPersons();
+        return ret;
+    }
+    @PostMapping("/persons")
+    public HttpStatus addPerson(@RequestBody Person person) {
+        return servicePerson.addPerson(person) ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
+    }
+}

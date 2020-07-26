@@ -1,0 +1,186 @@
+{
+    "rabbit_version": "3.8.3",
+    "rabbitmq_version": "3.8.3",
+    "users": [
+        {
+            "name": "guest",
+            "password_hash": "qMYVJejoAT8E942KRDIz71ltpdPYuh1DhQpkhklho2tM7V+G",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "guest",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "topic_permissions": [],
+    "parameters": [],
+    "global_parameters": [
+        {
+            "name": "cluster_name",
+            "value": "rabbit@SanSaniM"
+        },
+        {
+            "name": "internal_cluster_id",
+            "value": "rabbitmq-cluster-id-5Due7g2KiIoZq5Blck98Bg"
+        }
+    ],
+    "policies": [],
+    "queues": [
+        {
+            "name": "messagequeue2",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue4",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "tut.rpc.requests",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue6",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue5",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue3",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "tut.topic",
+            "vhost": "/",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "messagequeue-exchange",
+            "vhost": "/",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "tut.rpc",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "tut.direct",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "messagequeue-exchange",
+            "vhost": "/",
+            "destination": "messagequeue",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "messagequeue-exchange",
+            "vhost": "/",
+            "destination": "messagequeue2",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "tut.direct",
+            "vhost": "/",
+            "destination": "messagequeue4",
+            "destination_type": "queue",
+            "routing_key": "blue",
+            "arguments": {}
+        },
+        {
+            "source": "tut.direct",
+            "vhost": "/",
+            "destination": "messagequeue3",
+            "destination_type": "queue",
+            "routing_key": "red",
+            "arguments": {}
+        },
+        {
+            "source": "tut.rpc",
+            "vhost": "/",
+            "destination": "tut.rpc.requests",
+            "destination_type": "queue",
+            "routing_key": "rpc",
+            "arguments": {}
+        },
+        {
+            "source": "tut.topic",
+            "vhost": "/",
+            "destination": "messagequeue5",
+            "destination_type": "queue",
+            "routing_key": "*.*.green",
+            "arguments": {}
+        },
+        {
+            "source": "tut.topic",
+            "vhost": "/",
+            "destination": "messagequeue6",
+            "destination_type": "queue",
+            "routing_key": "white.*.*",
+            "arguments": {}
+        }
+    ]
+}
