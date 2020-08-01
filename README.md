@@ -74,9 +74,68 @@ B. Setup API (service) nhu trong WIki
 ./mvnw package -Dmaven.test.skip=true
 
 
+--------------------------Kubernetes------------------------
+https://kubernetes.io/docs/setup/learning-environment/minikube/
+
+1. Install minikube 
+brew install minikube
+2. Start
+minikube ip
+minikube start --driver=docker
+minikube start --docker-env http_proxy=http://$YOURPROXY:PORT --docker-env https_proxy=https://$YOURPROXY:PORT
+	minikube stop
+	minikube delete (need to clear minikube's local state when "machine does not exist" of start)
+minikube status
+
+3,. Kube
+kubectl proxy: expose/try run cluster
+kubectl cluster-info
+	Kubernetes master is running at https://127.0.0.1:32768
+	KubeDNS is running at https://127.0.0.1:32768/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+kubectl get nodes
+	NAME       STATUS   ROLES    AGE   VERSION
+	minikube   Ready    master   52m   v1.18.3
+
+kubectl get pods: Check if the Pod is up and running:
+kubectl describe pods: Detail of pods container (IP, port)
+kubectl delete services hello-minikube
+kubectl exec $POD_NAME env: Executing command [env] on the container
+kubectl exec -it kubernetes-bootcamp-6f6656d949-2vw7v bash: bash terminal
+kubectl get deployments: To list your deployments
 
 
+----Service
 
+kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+	Or kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+To access the hello-minikube Deployment, expose it as a Service:
+	kubectl expose deployment hello-minikube --type=NodePort --port=8080
+	
+kubectl get services: Get all services
+kubectl describe services/kubernetes-bootcamp: Describe services, Ports...
+kubectl describe deployment: List up Labels
+	kubectl get pods -l run=kubernetes-bootcamp: Used together with this to get info
+	kubectl get services -l run=kubernetes-bootcamp
+kubectl label pod $POD_NAME app=v1: apply new label
+	kubectl describe pods $POD_NAME
 
+kubectl delete service -l run=kubernetes-bootcamp: Delete service with label
 
+minikube service hello-minikube --url: Get the URL of the exposed Service to view the Service details:
 
+---- Scaling
+kubectl get rs: See the ReplicaSet by Deployment
+kubectl scale deployments/kubernetes-bootcamp --replicas=4: Scale DESIRE to 4
+kubectl get pods -o wide: Check number of Pods changed
+kubectl describe deployments/kubernetes-bootcamp: can see the log of new Replica
+Get the NODE PORT:
+	export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+		echo NODE_PORT=$NODE_PORT
+
+-Poll Update
+kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+	To update the image of the application to version 2, use the set image command, followed by the deployment name and the new image version:
+
+kubectl rollout undo deployments/kubernetes-bootcamp:
+	The rollout command reverted the deployment to the previous known state (v2 of the image). Updates are versioned and you can revert to any previously know state of a Deployment
