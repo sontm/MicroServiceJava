@@ -42,33 +42,26 @@ spec:
         resources: {}
         tty: true
         volumeMounts:
-        - mountPath: /etc/rabbitmq/enabled_plugins
-          name: rabbitmq-claim0
-        - mountPath: /etc/rabbitmq/definitions.json
-          name: rabbitmq-claim1
-        - mountPath: /etc/rabbitmq/rabbitmq.conf
-          name: rabbitmq-claim2
-        - mountPath: /var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-          name: rabbitmq-claim3
-        - mountPath: /var/log/rabbitmq/log
-          name: rabbitmq-claim4
+          - mountPath: /etc/rabbitmq
+            name: v-config-etc
+          - mountPath: /var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+            name: v-data
+          - mountPath: /var/log/rabbitmq/log
+            name: v-logs
       hostname: rabbitmq1
       restartPolicy: Always
       serviceAccountName: ""
       volumes:
-      - name: rabbitmq-claim0
-        persistentVolumeClaim:
-          claimName: rabbitmq-claim0
-      - name: rabbitmq-claim1
-        persistentVolumeClaim:
-          claimName: rabbitmq-claim1
-      - name: rabbitmq-claim2
-        persistentVolumeClaim:
-          claimName: rabbitmq-claim2
-      - name: rabbitmq-claim3
-        persistentVolumeClaim:
-          claimName: rabbitmq-claim3
-      - name: rabbitmq-claim4
-        persistentVolumeClaim:
-          claimName: rabbitmq-claim4
+      - name: v-config-etc
+        hostPath:
+          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/etc
+          type: Directory
+      - name: v-data
+        hostPath:
+          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/data
+          type: Directory
+      - name: v-logs
+        hostPath:
+          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/logs
+          type: Directory
 status: {}

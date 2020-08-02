@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-claim0-pv
+  labels:
+    type: local
+    app: postgresql-claim0
+spec:
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 200Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/volumes/postgresql/data2
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: postgresql-claim0
+    app: postgresql-claim0
+  name: postgresql-claim0
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+status: {}

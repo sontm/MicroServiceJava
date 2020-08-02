@@ -10,7 +10,7 @@ services:
         ports:
             - 5432:5432
         volumes:
-            - ./volumes/postgresql/data:/var/lib/postgresql/data
+            - ./volumes/postgresql/data2:/var/lib/postgresql/data
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U pipe"]
             interval: 30s
@@ -40,14 +40,25 @@ services:
         build:
             context: ./account-service
         environment:
-            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/account
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/pipe
             SPRING_DATASOURCE_USERNAME: pipe
             SPRING_DATASOURCE_PASSWORD: "123456"
         ports:
             - 9000:8080
         depends_on:
             - postgresql
-
+    cart-service:
+        image: cart-service
+        build:
+            context: ./cart-service
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/pipe
+            SPRING_DATASOURCE_USERNAME: pipe
+            SPRING_DATASOURCE_PASSWORD: "123456"
+        ports:
+            - 9001:8080
+        depends_on:
+            - postgresql
 networks:
     default:
         external:

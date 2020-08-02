@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: account-service
   name: account-service
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       io.kompose.service: account-service
@@ -33,6 +33,7 @@ spec:
         - name: SPRING_DATASOURCE_USERNAME
           value: pipe
         image: sansanvn/hellorepo:account-service
+        imagePullPolicy: Always
         name: account-service
         ports:
         - containerPort: 8080
