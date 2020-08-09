@@ -54,14 +54,14 @@ spec:
       volumes:
       - name: v-config-etc
         hostPath:
-          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/etc
+          path: /home/sontm/micro/MicroServiceJava/rabbitmq/etc
           type: Directory
       - name: v-data
         hostPath:
-          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/data
+          path: /home/sontm/micro/MicroServiceJava/rabbitmq/data
           type: Directory
       - name: v-logs
         hostPath:
-          path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/rabbitmq/logs
+          path: /home/sontm/micro/MicroServiceJava/rabbitmq/logs
           type: Directory
 status: {}

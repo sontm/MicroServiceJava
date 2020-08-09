@@ -13,7 +13,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: /Users/sontran/Work/Web/Microservices/MicroJava/MicroServiceJava/volumes/postgresql/data2
+    path: /home/sontm/postgresql
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

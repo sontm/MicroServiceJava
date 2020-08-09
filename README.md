@@ -156,6 +156,7 @@ kubectl rollout undo deployments/kubernetes-bootcamp:
 ---------------
 kubectl proxy
 	To start proxy for local Host
+		kubectl proxy --address='0.0.0.0' --accept-hosts='.*'
 	dash-board on http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 		Token: > kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk '/^deployment-controller-token-/{print $1}') | awk '$1=="token:"{print $2}'
 
@@ -170,3 +171,123 @@ kubectl apply -f deploy/account-service-deployment.yaml
 kubectl apply -f service/account-service-service.yaml 
 kubectl apply -f deploy/cart-service-deployment.yaml 
 kubectl apply -f service/cart-service-service.yaml 
+
+
+-------------------Kubernetes Cluster Setup
+https://opensource.com/article/20/6/kubernetes-raspberry-pi
+https://medium.com/nycdev/k8s-on-pi-9cc14843d43
+
+KMaster:
+	sudo apt-get install openssh-server -y
+	sudo apt install sysstat -y
+	
+	sudo swapoff -a
+		Modifi /etc/fstab to disable swap
+	sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+	//curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+		cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+		deb https://apt.kubernetes.io/ kubernetes-xenial main
+		EOF
+	sudo apt-get update
+	sudo apt-get install -y kubelet kubeadm kubectl
+	sudo apt-mark hold kubelet kubeadm kubectl
+
+	sudo apt-get install docker.io -y	
+	sudo usermod -aG docker $USER
+	
+Pi:
+	sudo netstat -lnp | grep 10250			to find port used 10250
+
+	sudo swapoff -a
+	sudo dphys-swapfile swapoff && \
+	  sudo dphys-swapfile uninstall && \
+	  sudo update-rc.d dphys-swapfile remove
+	SetCONF_SWAPSIZE=0  in  /etc/dphys-swapfile
+
+
+kMaster
+		//sudo kubeadm init --pod-network-cidr=192.168.1.218/24   if use calico or flannel
+	sudo kubeadm init
+		sudo kubeadm join 192.168.1.218:6443 --token pmflzu.qactu8twg1cyuej5 --discovery-token-ca-cert-hash sha256:48397a65bd907d2050aff30f3bfbad2b10df74c079b8ad8402369b89ee1e5695
+	mkdir -p $HOME/.kube
+	sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+	kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+	  	  kubectl delete -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+		kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+			OK for ARM also
+	kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+	kubectl get pods --all-namespaces
+
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+		kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+
+---delete
+
+	Restart Node: sudo systemctl restart kubelet
+	iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+
+	To remove node: kubectl delete node pi2
+		kubectl drain <node_name> --delete-local-data --force --ignore-daemonsets
+	On Node: sudo kubeadm reset --force
+		then rejoin
+
+Post Install
+
+	kubectl create deploy nginx --image=nginx
+	kubectl create service nodeport nginx --tcp=80:80
+
+To FIx CrashLoopBackOff of coredns
+	$ kubectl edit cm coredns -n kube-system 
+		delete ‘loop’ ,save and exit restart master node. It was work for me.
+	https://stackoverflow.com/questions/53559291/kubernetes-coredns-in-crashloopbackoff
+
+
+Monitoring
+	https://github.com/prometheus-operator/kube-prometheus
+	https://github.com/prometheus-operator/prometheus-operator/tree/master/contrib/kube-prometheus
+	kubectl create -f manifests/setup
+	until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+	kubectl create -f manifests/
+
+	Prometheus
+
+	$ kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
+	Then access via http://localhost:9090
+
+	Grafana
+
+	$ kubectl --namespace monitoring port-forward svc/grafana 3000
+	Then access via http://localhost:3000 and use the default grafana user:password of admin:admin.
+
+	Alert Manager
+
+	$ kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
+	Then access via http://localhost:9093
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
