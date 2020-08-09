@@ -42,26 +42,20 @@ spec:
         resources: {}
         tty: true
         volumeMounts:
-          - mountPath: /etc/rabbitmq
-            name: v-config-etc
-          - mountPath: /var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-            name: v-data
-          - mountPath: /var/log/rabbitmq/log
-            name: v-logs
+          - name: "config"
+            mountPath: /etc/rabbitmq/definitions.json
+            subPath: definitions.json
+          - name: "config"
+            mountPath: /etc/rabbitmq/enabled_plugins
+            subPath: enabled_plugins
+          - name: "config"
+            mountPath: /etc/rabbitmq/rabbitmq.conf
+            subPath: rabbitmq.conf
       hostname: rabbitmq1
       restartPolicy: Always
       serviceAccountName: ""
       volumes:
-      - name: v-config-etc
-        hostPath:
-          path: /home/sontm/micro/MicroServiceJava/rabbitmq/etc
-          type: Directory
-      - name: v-data
-        hostPath:
-          path: /home/sontm/micro/MicroServiceJava/rabbitmq/data
-          type: Directory
-      - name: v-logs
-        hostPath:
-          path: /home/sontm/micro/MicroServiceJava/rabbitmq/logs
-          type: Directory
+      - name: "config"
+        configMap:
+          name: "rabbitmq-config"
 status: {}

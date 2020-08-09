@@ -13,7 +13,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: /home/sontm/postgresql
+    path: /tmp/postgresql
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

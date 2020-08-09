@@ -159,6 +159,9 @@ kubectl proxy
 		kubectl proxy --address='0.0.0.0' --accept-hosts='.*'
 	dash-board on http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 		Token: > kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk '/^deployment-controller-token-/{print $1}') | awk '$1=="token:"{print $2}'
+------------------------
+kubectl create configmap rabbitmq-config --from-file=configMaps/rabbitmq-etc/etc/definitions.json --from-file=configMaps/rabbitmq-etc/etc/enabled_plugins --from-file=configMaps/rabbitmq-etc/etc/rabbitmq.conf 
+
 
 kubectl delete -f service/account-service-service.yaml 
 kubectl delete -f deploy/account-service-deployment.yaml 
@@ -172,7 +175,7 @@ kubectl apply -f service/account-service-service.yaml
 kubectl apply -f deploy/cart-service-deployment.yaml 
 kubectl apply -f service/cart-service-service.yaml 
 
-
+kubectl proxy
 -------------------Kubernetes Cluster Setup
 https://opensource.com/article/20/6/kubernetes-raspberry-pi
 https://medium.com/nycdev/k8s-on-pi-9cc14843d43
