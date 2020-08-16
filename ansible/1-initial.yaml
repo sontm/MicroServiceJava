@@ -1,0 +1,18 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: allow 'sontm' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'sontm ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: disable swap
+      become: yes
+      become_user: sontm
+      shell: "sudo swapoff -a"
+
+    - name: install sysstat for cpu and mem usage
+      apt:
+        name: sysstat
+        state: present
