@@ -29,9 +29,9 @@ spec:
         - name: SPRING_DATASOURCE_PASSWORD
           value: "123456"
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:postgresql://postgresql:5432/pipe
+          value: jdbc:postgresql://postgresql:5432/account
         - name: SPRING_DATASOURCE_USERNAME
-          value: pipe
+          value: postgres
         image: sansanvn/hellorepo:account-service
         imagePullPolicy: Always
         name: account-service

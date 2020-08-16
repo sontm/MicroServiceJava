@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -24,6 +25,7 @@ public class Role {
     
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
     @JsonManagedReference
+    @JsonIgnore
     private Set<User> users = new HashSet<User>(0);
             
 

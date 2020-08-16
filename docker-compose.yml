@@ -40,8 +40,8 @@ services:
         build:
             context: ./account-service
         environment:
-            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/pipe
-            SPRING_DATASOURCE_USERNAME: pipe
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/account
+            SPRING_DATASOURCE_USERNAME: postgres
             SPRING_DATASOURCE_PASSWORD: "123456"
         ports:
             - 9000:8080

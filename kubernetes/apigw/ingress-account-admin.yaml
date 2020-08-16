@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-account-admin
+  annotations:
+    #Strip /account when passing to service
+    configuration.konghq.com: custom-strippath
+    #konghq.com/strip-path: "true"
+    konghq.com/plugins: cluster-keyauth
+    konghq.com/plugins: app-jwt,acl-admin
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /account/admin
+        backend:
+          serviceName: account-service
+          servicePort: 9000

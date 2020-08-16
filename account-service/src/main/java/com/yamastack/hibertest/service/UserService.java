@@ -81,5 +81,13 @@ public class UserService implements IUserService {
         }
         return false;
     }
+
+    @Override
+    @Transactional
+    public List<User> getAllUsers() {
+        return (List<User>)dao.findAll();
+    }
+
+    
     
 }

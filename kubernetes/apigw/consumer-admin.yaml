@@ -1,0 +1,9 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+    name: admin
+username: admin
+credentials:
+    - apikey-generic
+    - jwt-admin
+    - secret-acl-admin

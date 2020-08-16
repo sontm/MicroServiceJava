@@ -26,6 +26,13 @@ public class UserController {
     UserService service;
 
     static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @GetMapping("/")
+    public ResponseEntity<?> index() {
+        logger.debug("[Account] Index");
+        return ResponseEntity.ok("Welcome to AccountService");
+    }
+
     /**
      * Authenticate with User and Password
      *
@@ -54,5 +61,12 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        logger.debug("[Account] getAllUsers ");
+        return ResponseEntity.ok(service.getAllUsers());
     }
 }

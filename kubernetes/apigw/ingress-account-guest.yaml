@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-account-guest
+  annotations:
+    # Not Strip Path for Guest auth
+    konghq.com/plugins: cluster-keyauth
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /auth
+        backend:
+          serviceName: account-service
+          servicePort: 9000

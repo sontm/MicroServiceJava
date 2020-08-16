@@ -1,0 +1,7 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: acl-admin
+plugin: acl
+config:
+  whitelist: ['app-admin']

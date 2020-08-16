@@ -1,0 +1,9 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rl-by-ip
+config:
+  second: 2
+  limit_by: ip
+  policy: local
+plugin: rate-limiting

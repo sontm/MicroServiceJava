@@ -30,7 +30,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "123456"
         - name: POSTGRES_USER
-          value: pipe
+          value: postgres
         - name: TZ
           value: Asia/Tokyo
         image: postgres:9.6

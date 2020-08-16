@@ -79,6 +79,7 @@ B. Setup API (service) nhu trong WIki
 ./mvnw package -Dmaven.test.skip=true
 
 --------------------------Docker Tag/Push-------------------
+docker login -u sansanvn -p $DOCKER_PWD
 docker login -u sansanvn -p ilovejapan
 docker login -u sansanvn --password-stdin
 docker tag account-service sansanvn/hellorepo:account-service
