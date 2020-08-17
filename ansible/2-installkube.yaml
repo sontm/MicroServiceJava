@@ -8,9 +8,9 @@
        update_cache: true
 
    - name: add user to docker group
-      become: yes
-      become_user: sontm
-      shell: "sudo usermod -aG docker $USER"
+     become: yes
+     become_user: sontm
+     shell: "sudo usermod -aG docker $USER"
 
    - name: install APT Transport HTTPS
      apt:

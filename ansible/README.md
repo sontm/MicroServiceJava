@@ -50,3 +50,11 @@ ansible-playbook -i hosts 4-workerjoin.yaml
 #   Optional To FIx CrashLoopBackOff of coredns, DELETE loop in the command :$ kubectl edit cm coredns -n kube-system 
 
 
+
+
+# Fix Flannel cni already have ip..., for every node and master
+//sudo ifconfig cni0 down    
+//sudo ip link delete cni0
+//sudo brctl delbr cni0  
+
+sudo ifconfig cni0 down && sudo rm -rf /var/lib/cni/flannel/* && sudo rm -rf /var/lib/cni/networks/cbr0/* && sudo ip link delete cni0 && sudo rm -rf /var/lib/cni/networks/cni0/* 

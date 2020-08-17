@@ -18,7 +18,7 @@ kubectl apply -f ./kubernetes/_setup/dashboard-2.0.0.yaml
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk '/^deployment-controller-token-/{print $1}') | awk '$1=="token:"{print $2}'
 
 kubectl create -f ./kubernetes/_setup/prometheus-grafana/manifests/setup
-sleep 10
+sleep 10s
 
 until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
 
@@ -27,11 +27,14 @@ kubectl create -f ./kubernetes/_setup/prometheus-grafana/manifests/
 #Prometheus
 #$ kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
 #Then access via http://localhost:9090
+# ??  http://localhost:8001/api/v1/namespaces/monitoring/services/https:prometheus-k8s:/proxy/
 
 #Grafana
 #$ kubectl --namespace monitoring port-forward svc/grafana 3000
 #Then access via http://localhost:3000 and use the default grafana user:password of admin:admin.
+#   http://localhost:8001/api/v1/namespaces/monitoring/services/https:grafana:/proxy/
 
 #Alert Manager
 #$ kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 #Then access via http://localhost:9093
+#   http://localhost:8001/api/v1/namespaces/monitoring/services/https:alertmanager-main:/proxy/

@@ -1,0 +1,56 @@
+- hosts: all
+  tasks:
+   - name: Remove CNI0 error
+     become: yes
+     become_user: sontm
+     shell: "sudo rm -rf /var/lib/cni/flannel/* && sudo rm -rf /var/lib/cni/networks/cbr0/* && sudo ifconfig cni0 down && sudo ip link delete cni0 && sudo rm -rf /var/lib/cni/networks/cni0/* "
+     ignore_errors: yes
+
+- hosts: kmaster
+  become: yes
+  tasks:
+    - name: Ansible delete file example
+      become: yes
+      become_user: sontm
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - $HOME/cluster_initialized.txt
+        - $HOME/pod_network_setup.txt
+
+    - name: clean up kubeadm
+      become: yes
+      become_user: sontm
+      shell: "sudo kubeadm reset --force"
+
+    - name: initialize the cluster
+      become: yes
+      become_user: sontm
+      shell: sudo kubeadm init >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: sontm
+      file:
+        path: /home/sontm/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/sontm/.kube/config
+        remote_src: yes
+        owner: sontm
+
+    - name: install Pod network
+      become: yes
+      become_user: sontm
+      shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" >> pod_network_setup.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt

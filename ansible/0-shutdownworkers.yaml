@@ -1,0 +1,7 @@
+- hosts: kworkers
+  become: yes
+  tasks:
+    - name: shutdown workers
+      become: yes
+      become_user: sontm
+      shell: "sudo shutdown -h now"
