@@ -1,5 +1,6 @@
 package com.yamastack.hibertest.controller;
 
+import com.yamastack.hibertest.JwtTokenProvider;
 import com.yamastack.hibertest.dto.REQAuthenticateDTO;
 import com.yamastack.hibertest.dto.REQSignupUserDTO;
 import com.yamastack.hibertest.entity.User;
@@ -25,6 +26,9 @@ public class UserController {
     @Autowired
     UserService service;
 
+    @Autowired
+	JwtTokenProvider tokenProvider;
+
     static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/")
@@ -46,7 +50,9 @@ public class UserController {
         User user = service.getUser(req.getEmail(), req.getPassword());
         if (user != null) {
             logger.debug(" Login OK");
-            return ResponseEntity.ok(user);
+            String jwt = tokenProvider.generateToken(user);
+            logger.debug("jwt:{}", jwt);
+            return ResponseEntity.ok(jwt);
         } else {
             logger.debug(" Login Failed");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
