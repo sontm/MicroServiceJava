@@ -273,6 +273,10 @@ Monitoring
 
 
 
+	+---Proxyyy--------------
+	+$ kubectl proxy --port=8080
+	+Now, you can navigate through the Kubernetes API to access this service using this scheme:
+	+http://localhost:8080/api/v1/proxy/namespaces/<NAMESPACE>/services/<SERVICE-NAME>:<PORT-NAME>/
 
 
 
