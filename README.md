@@ -160,6 +160,12 @@ kubectl proxy
 		kubectl proxy --address='0.0.0.0' --accept-hosts='.*'
 	dash-board on http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 		Token: > kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk '/^deployment-controller-token-/{print $1}') | awk '$1=="token:"{print $2}'
+
++---Proxyyy--------------
++$ kubectl proxy --port=8080
++Now, you can navigate through the Kubernetes API to access this service using this scheme:
++http://localhost:8080/api/v1/proxy/namespaces/<NAMESPACE>/services/<SERVICE-NAME>:<PORT-NAME>/
+
 ------------------------
 kubectl create configmap rabbitmq-config --from-file=configMaps/rabbitmq-etc/etc/definitions.json --from-file=configMaps/rabbitmq-etc/etc/enabled_plugins --from-file=configMaps/rabbitmq-etc/etc/rabbitmq.conf 
 
@@ -276,12 +282,9 @@ REstart CoreDNS
 
 kubectl rollout restart -n kube-system deployment/coredns
 
-	+---Proxyyy--------------
-	+$ kubectl proxy --port=8080
-	+Now, you can navigate through the Kubernetes API to access this service using this scheme:
-	+http://localhost:8080/api/v1/proxy/namespaces/<NAMESPACE>/services/<SERVICE-NAME>:<PORT-NAME>/
+REstart CoreDNS
 
-
+kubectl rollout restart -n kube-system deployment/coredns
 
 
 
