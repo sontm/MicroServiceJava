@@ -58,3 +58,23 @@ ansible-playbook -i hosts 4-workerjoin.yaml
 //sudo brctl delbr cni0  
 
 sudo ifconfig cni0 down && sudo rm -rf /var/lib/cni/flannel/* && sudo rm -rf /var/lib/cni/networks/cbr0/* && sudo ip link delete cni0 && sudo rm -rf /var/lib/cni/networks/cni0/* 
+
+
+
+
+# Disable GUI Ubuntu
+
+To boot to console:
+
+$ sudo systemctl set-default multi-user.target
+
+You must then edit /etc/default/grub by removing splash from the GRUB command line. (Remember to update GRUB afterward: sudo update-grub).
+
+To get to the Unity desktop from the console, you must enter the command:
+
+$ sudo systemctl start lightdm.service
+(The usual startx command doesn't work with Unity.)
+
+To restore boot to GUI:
+
+$ sudo systemctl set-default graphical.target

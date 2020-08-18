@@ -1,0 +1,94 @@
+- hosts: newworkers
+  become: yes
+  tasks:
+    - name: allow 'sontm' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'sontm ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: disable swap
+      become: yes
+      become_user: sontm
+      shell: "sudo swapoff -a"
+
+    - name: install sysstat for cpu and mem usage
+      apt:
+        name: sysstat
+        state: present
+
+    - name: install Docker
+      apt:
+       name: docker.io
+       state: present
+       update_cache: true
+
+    - name: add user to docker group
+      become: yes
+      become_user: sontm
+      shell: "sudo usermod -aG docker $USER"
+
+    - name: install APT Transport HTTPS
+      apt:
+       name: apt-transport-https
+       state: present
+
+    - name: add Kubernetes apt-key
+      apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+
+    - name: add Kubernetes' APT repository
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
+
+    - name: install kubelet
+      apt:
+       name: kubelet=1.18.8-00
+       state: present
+       update_cache: true
+
+    - name: install kubeadm
+      apt:
+       name: kubeadm=1.18.8-00
+       state: present
+      
+- hosts: kmaster
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+
+- hosts: newworkers
+  become: yes
+  tasks:
+    - name: Ansible delete file
+      become: yes
+      become_user: sontm
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - $HOME/node_joined.txt
+
+    - name: clean up each worker
+      become: yes
+      become_user: sontm
+      shell: "sudo kubeadm reset --force"
+
+    - name: join cluster
+      become: yes
+      become_user: sontm
+      shell: "sudo {{ hostvars['kmaster'].join_command }} >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt

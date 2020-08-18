@@ -272,6 +272,9 @@ Monitoring
 	Then access via http://localhost:9093
 
 
+REstart CoreDNS
+
+kubectl rollout restart -n kube-system deployment/coredns
 
 
 

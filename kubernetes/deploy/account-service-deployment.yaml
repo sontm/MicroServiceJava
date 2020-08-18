@@ -32,6 +32,14 @@ spec:
           value: jdbc:postgresql://postgresql:5432/account
         - name: SPRING_DATASOURCE_USERNAME
           value: postgres
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: create
+        - name: SPRING_JPA_DATABASE
+          value: POSTGRESQL
+        - name: SPRING_SESSION_STORE_TYPE
+          value: jdbc
+        - name: SPRING_SESSION_JDBC_INITIALIZE_SCHEMA
+          value: always
         image: sansanvn/hellorepo:account-service
         imagePullPolicy: Always
         name: account-service

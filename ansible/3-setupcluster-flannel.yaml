@@ -1,3 +1,11 @@
+- hosts: all
+  tasks:
+   - name: Remove CNI0 error
+     become: yes
+     become_user: sontm
+     shell: "rm -f /etc/cni/net.d/*flannel* && sudo rm -rf /var/lib/cni/flannel/* && sudo rm -rf /var/lib/cni/networks/cbr0/* && sudo ifconfig cni0 down && sudo ip link delete cni0 && sudo rm -rf /var/lib/cni/networks/cni0/* "
+     ignore_errors: yes
+
 - hosts: kmaster
   become: yes
   tasks:
