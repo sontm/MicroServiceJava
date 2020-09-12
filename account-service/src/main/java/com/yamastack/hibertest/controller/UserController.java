@@ -51,6 +51,7 @@ public class UserController {
         if (user != null) {
             logger.debug(" Login OK");
             String jwt = tokenProvider.generateToken(user);
+            System.out.println("jwt:");
             logger.debug("jwt:{}", jwt);
             return ResponseEntity.ok(jwt);
         } else {

@@ -1,7 +1,6 @@
 package com.yamastack.hibertest.service;
 
 import com.yamastack.hibertest.dao.AccountRepository;
-import com.yamastack.hibertest.dao.RoleRepository;
 import com.yamastack.hibertest.dao.UserRepository;
 import com.yamastack.hibertest.dto.REQSignupUserDTO;
 import com.yamastack.hibertest.entity.Account;
@@ -29,9 +28,6 @@ public class UserService implements IUserService {
     @Autowired
     AccountRepository daoAccount;
 
-    @Autowired
-    RoleRepository daoRole;
-
     @Override
     @Transactional
     public User getUser(String email, String password) {
@@ -41,7 +37,10 @@ public class UserService implements IUserService {
             Account a = opt.get();
             if (passwordEncoder.matches(password, a.getPassword())) {
                 // Matched
-                return a.getUser();
+                Optional<User> optUser = dao.findById(a.getUserId());
+                if (opt.isPresent()) {
+                    return optUser.get();
+                }
             }
         }
         return null;
@@ -50,33 +49,29 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public boolean addUser(REQSignupUserDTO info, String passwordHash) {
-        Optional<Role> optRole = daoRole.findByRoleType(AppConstants.ROLE_NORMAL);
-        if (optRole.isPresent()) {
-            Role role = optRole.get();
-            User user = new User();
-            user.setId(AppConstants.generateRandomUUID());
-            user.setEmail(info.getEmail());
-            user.setFirstName(info.getFirstName());
-            user.setMiddleName(info.getMiddleName());
-            user.setLastName(info.getLastName());
-            user.setPhone(info.getPhone());
-            user.setRole(role);
+        Role role = new Role();
+        role.type = AppConstants.ACCOUNT_TYPE_LOCAL;
 
-            Account account = new Account();
-            account.setType(AppConstants.ACCOUNT_TYPE_LOCAL);
-            account.setId(AppConstants.generateRandomUUID());
-            account.setEmail(info.getEmail());
-            account.setPasswordRaw(info.getPassword());
-            account.setPassword(passwordHash);
-            account.setUser(user);
-            
-            if ( daoRole.save(role) != null) {
-                if ( dao.save(user) != null) {
-                    if (daoAccount.save(account) != null) {
-                        return true;
-                    }
-                }
-                
+        User user = new User();
+        user.setId(AppConstants.generateRandomUUIDString());
+        user.setEmail(info.getEmail());
+        user.setFirstName(info.getFirstName());
+        user.setMiddleName(info.getMiddleName());
+        user.setLastName(info.getLastName());
+        user.setPhone(info.getPhone());
+        user.setRole(role);
+
+        Account account = new Account();
+        account.setType(AppConstants.ACCOUNT_TYPE_LOCAL);
+        account.setId(AppConstants.generateRandomUUIDString());
+        account.setEmail(info.getEmail());
+        account.setPasswordRaw(info.getPassword());
+        account.setPassword(passwordHash);
+        account.setUserId(user.getId());
+        
+        if ( dao.save(user) != null) {
+            if (daoAccount.save(account) != null) {
+                return true;
             }
         }
         return false;

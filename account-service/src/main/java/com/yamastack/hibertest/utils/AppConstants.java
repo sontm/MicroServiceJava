@@ -15,4 +15,8 @@ public class AppConstants {
     public static UUID generateRandomUUID() {
         return java.util.UUID.randomUUID();
     }
+
+    public static String generateRandomUUIDString() {
+        return java.util.UUID.randomUUID().toString();
+    }
 }

@@ -4,53 +4,32 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-@Entity
-@Table(name = "user", schema = "public")
+import org.springframework.data.annotation.Id;
+
 public class User {
     @Id
-    private UUID id;
+    private String id;
 
-    @Column(length = 30)
     private String email;
 
-    @Column(length = 30)
     private String phone;
 
-    @Column(length = 20)
     private String firstName;
 
-    @Column(length = 20)
     private String lastName;
 
-    @Column(length = 20)
     private String middleName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "fid_role", nullable = false)
-    @JsonBackReference
     private Role role;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
-    private Set<Account> accounts = new HashSet<Account>(0);
-
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -101,14 +80,5 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
-
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-    }
-
     
 }

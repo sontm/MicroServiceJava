@@ -2,61 +2,42 @@ package com.yamastack.hibertest.entity;
 
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
-@Table(name = "account", schema = "public")
+import org.springframework.data.annotation.Id;
+
 public class Account {
     @Id
-    private UUID id;
+    private String id;
 
-    @Column(length = 10)
     private String type; // local, facebook...
 
-    @Column(length = 30)
     private String email;
 
-    @Column(length = 30)
     @JsonIgnore
     private String passwordRaw;
-    @Column(length = 100)
+
     @JsonIgnore
     private String password;
 
-    @Column(length = 50)
     private String accessToken;
 
-    @Column(length = 50)
     private String uniqueId;
 
-    @Column(length = 300)
     private String pictureUrl;
 
-    @Column(length = 100)
     private String fullName;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "fid_user", nullable = false)
-    @JsonBackReference
-    private User user;
+    private String userId;
 
     // --------------------------------------------------------
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -100,14 +81,6 @@ public class Account {
         this.fullName = fullName;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public String getType() {
         return type;
     }
@@ -131,5 +104,15 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    
     
 }
