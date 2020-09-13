@@ -1,5 +1,5 @@
 {
-  "name": "backend-strapi",
+  "name": "strapicms-service",
   "private": true,
   "version": "0.1.0",
   "description": "A Strapi application",
@@ -22,7 +22,10 @@
     "strapi-plugin-upload": "3.1.4",
     "strapi-plugin-users-permissions": "3.1.4",
     "strapi-provider-upload-aws-s3": "^3.1.4",
-    "strapi-utils": "3.1.4"
+    "strapi-utils": "3.1.4",
+    "@ckeditor/ckeditor5-build-classic": "^21.0.0",
+    "@ckeditor/ckeditor5-react": "^2.1.0",
+    "ckeditor-build-with-simple-upload-provider-strapi": "^1.0.7"
   },
   "author": {
     "name": "A Strapi developer"
