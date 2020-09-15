@@ -3,6 +3,7 @@ package com.yamastack.hibertest.controller;
 import com.yamastack.hibertest.JwtTokenProvider;
 import com.yamastack.hibertest.dto.REQAuthenticateDTO;
 import com.yamastack.hibertest.dto.REQSignupUserDTO;
+import com.yamastack.hibertest.dto.RESLoginedUserDTO;
 import com.yamastack.hibertest.entity.User;
 import com.yamastack.hibertest.service.UserService;
 
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -51,9 +53,11 @@ public class UserController {
         if (user != null) {
             logger.debug(" Login OK");
             String jwt = tokenProvider.generateToken(user);
-            System.out.println("jwt:");
+            RESLoginedUserDTO payload = new RESLoginedUserDTO();
+            payload.setUser(user);
+            payload.setJwt(jwt);
             logger.debug("jwt:{}", jwt);
-            return ResponseEntity.ok(jwt);
+            return ResponseEntity.ok(payload);
         } else {
             logger.debug(" Login Failed");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -67,6 +71,21 @@ public class UserController {
             return ResponseEntity.ok(true);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String authheader) {
+        logger.debug("[Account] Get profile with JWT ");
+        
+        if (authheader.length() > 20 && authheader.startsWith("Bearer")) {
+            String jwt = authheader.substring(7);
+            logger.debug(jwt);
+
+            User user = tokenProvider.getUserInfoFromJWT(jwt);
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.ok("Invalid Autorization Header!");
         }
     }
 

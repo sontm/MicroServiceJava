@@ -45,8 +45,12 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getId())
                 .setHeaderParam("typ", "JWT")
+                .claim("id", user.getId())
                 .claim("email", user.getEmail())
                 .claim("phone", user.getPhone())
+                .claim("firstName", user.getFirstName())
+                .claim("middleName", user.getMiddleName())
+                .claim("lastName", user.getLastName())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
@@ -54,12 +58,25 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getUserIdFromJWT(String token) {
+    public User getUserInfoFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject().toString();
+        if (claims.getIssuer().equals(jwtKey)) {
+            User user= new User();
+            user.setId(claims.get("id").toString());
+            user.setEmail(claims.get("email").toString());
+            user.setPhone(claims.get("phone").toString());
+            user.setFirstName(claims.get("firstName").toString());
+            user.setMiddleName(claims.get("middleName").toString());
+            user.setLastName(claims.get("lastName").toString());
+    
+            return user;
+        } else {
+            return null;
+        }
+        
     }
 
     public boolean validateToken(String authToken) {
