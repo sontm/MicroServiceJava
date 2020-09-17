@@ -1,9 +1,9 @@
 package main
+
 //import "net/http"
 //go get github.com/gorilla/mux
 //go get github.com/lib/pq
 //go get github.com/jinzhu/gorm
-
 
 //go get -u github.com/gin-gonic/gin
 //go get github.com/rs/cors
@@ -12,16 +12,16 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-   	"go.mongodb.org/mongo-driver/mongo"
-   	"go.mongodb.org/mongo-driver/mongo/options"
-   	//"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	//"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // type DBCart struct {
@@ -30,22 +30,15 @@ import (
 // 	Cars    []Car
 // }
 
-type sCartProduct struct {
-	Id string `json:"id"`
-	Name  string `json:"name"`
-	Quantity int `json:"quantity"`
-	NewPrice float64 `json:"newPrice"`
-	OldPrice float64 `json:"oldPrice"`
-	DiscountPercent int `json:"discountPercent"`
-}
-
 type sCartItem struct {
-	UserId string `json:"userId"`
-	Product sCartProduct `json:"product"`
-	Active bool `json:"active"`
+	UserId    string `json:"userId"`
+	ProductId string `json:"productId"`
+	Quantity  int    `json:"quantity"`
+	Active    bool   `json:"active"`
 }
 
 var gClient mongo.Client
+
 func main() {
 	APP_SETTING_ORIGIN := "http://localhost:3000"
 	APP_SETTING_DBURL := "mongodb://localhost:27017"
@@ -56,8 +49,8 @@ func main() {
 	if os.Getenv("APP_SETTING_DBURL") != "" {
 		APP_SETTING_DBURL = os.Getenv("APP_SETTING_DBURL")
 	}
-	fmt.Println("APP_SETTING_ORIGIN:", APP_SETTING_ORIGIN);
-	fmt.Println("APP_SETTING_DBURL:", APP_SETTING_DBURL);
+	fmt.Println("APP_SETTING_ORIGIN:", APP_SETTING_ORIGIN)
+	fmt.Println("APP_SETTING_DBURL:", APP_SETTING_DBURL)
 
 	router := gin.Default()
 	// router.Use(cors.New(cors.Config{
@@ -77,13 +70,13 @@ func main() {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(APP_SETTING_DBURL))
 
-    if err != nil {
-    	log.Fatal(err)
-    }
-    ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-    err = client.Connect(ctx)
-    if err != nil {
-    	log.Fatal(err)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
 	}
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
@@ -93,7 +86,7 @@ func main() {
 	}
 	fmt.Println("Connected to MongoDB!")
 	gClient = *client
-	
+
 	router.POST("/order/cart", UpsertProductToCart)
 	router.GET("/order/cart/:userid", GetCartOfUser)
 	//router.HandleFunc("/cars/{id}", DeleteCar).Methods("DELETE")
@@ -103,30 +96,26 @@ func main() {
 	//defer client.Disconnect(ctx)
 }
 
+//'userId': userId, 'productId': productId, 'quantity': quantity
 func UpsertProductToCart(c *gin.Context) {
 	// Validate input
 	var input sCartItem
 	if err := c.ShouldBindJSON(&input); err != nil {
-	  c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	  return
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	fmt.Println(input)
 	dbCart := gClient.Database("dborder").Collection("carts")
 
 	opts := options.Update().SetUpsert(true)
 	filter := bson.D{
-		{"userid", input.UserId},
-		{"product.id", input.Product.Id},
+		{"userId", input.UserId},
+		{"productId", input.ProductId},
 		{"active", true},
 	}
 	update := bson.D{
-		{"$set", bson.D{{"product.name", input.Product.Name}}},
-		{"$set", bson.D{{"product.Quantity", input.Product.Quantity}}},
-		{"$set", bson.D{{"product.newPrice", input.Product.NewPrice}}},
-		{"$set", bson.D{{"product.oldPrice", input.Product.OldPrice}}},
-		{"$set", bson.D{{"product.discountPercent", input.Product.DiscountPercent}}},
+		{"$set", bson.D{{"quantity", input.Quantity}}},
 	}
-	
 	result, err := dbCart.UpdateOne(context.TODO(), filter, update, opts)
 	if err != nil {
 		log.Fatal(err)
@@ -137,10 +126,29 @@ func UpsertProductToCart(c *gin.Context) {
 	// 	if err != nil {
 	// 		log.Fatal(err)
 	// 	}
-	
-	// 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	c.JSON(200, result)
 
+	// 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	// Get All Cart Items of current Users
+	var results []*sCartItem
+	cursor, err := dbCart.Find(context.TODO(), bson.D{{"userId", input.UserId}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var item sCartItem
+		if err = cursor.Decode(&item); err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, &item)
+	}
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+	// Close the cursor once finished
+	cursor.Close(context.TODO())
+
+	c.JSON(200, results)
 
 }
 
@@ -151,7 +159,7 @@ func GetCartOfUser(c *gin.Context) {
 
 	dbCart := gClient.Database("dborder").Collection("carts")
 
-	cursor, err := dbCart.Find(context.TODO(), bson.D{{"userid", userid}})
+	cursor, err := dbCart.Find(context.TODO(), bson.D{{"userId", userid}})
 	if err != nil {
 		log.Fatal(err)
 	}
