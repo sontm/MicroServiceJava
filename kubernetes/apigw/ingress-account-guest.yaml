@@ -5,6 +5,8 @@ metadata:
   annotations:
     # Not Strip Path for Guest auth
     konghq.com/plugins: cluster-keyauth
+    # Cors
+    konghq.com/plugins: cors-plugin
 spec:
   rules:
   - http:

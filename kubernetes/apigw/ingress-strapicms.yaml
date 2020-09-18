@@ -1,20 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ingress-account-admin
+  name: ingress-strapicms
   annotations:
     #Strip /account when passing to service
     configuration.konghq.com: custom-strippath
-    #konghq.com/strip-path: "true"
+    # Not Strip Path for Guest auth
     konghq.com/plugins: cluster-keyauth
-    konghq.com/plugins: app-jwt,acl-admin
     # Cors
     konghq.com/plugins: cors-plugin
 spec:
   rules:
   - http:
       paths:
-      - path: /account/admin
+      - path: /cms
         backend:
-          serviceName: account-service
-          servicePort: 9000
+          serviceName: strapicms-service
+          servicePort: 1337

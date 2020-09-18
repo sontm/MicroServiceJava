@@ -11,7 +11,7 @@ metadata:
   name: mongodb-claim0-pv
 spec:
   capacity:
-    storage: 100Mi
+    storage: 7Gi
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
