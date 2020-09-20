@@ -27,3 +27,4 @@ kubectl apply -f kubernetes/apigw/consumer-generic.yaml
 kubectl apply -f kubernetes/apigw/ingress-account-admin.yaml
 kubectl apply -f kubernetes/apigw/ingress-account-guest.yaml
 kubectl apply -f kubernetes/apigw/ingress-strapicms.yaml
+kubectl apply -f kubernetes/apigw/ingress-order.yaml

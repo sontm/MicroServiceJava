@@ -4,10 +4,13 @@ package main
 //go get github.com/gorilla/mux
 //go get github.com/lib/pq
 //go get github.com/jinzhu/gorm
+//go get github.com/rs/cors
+
+
 
 //go get -u github.com/gin-gonic/gin
-//go get github.com/rs/cors
-//go get go.mongodb.org/mongo-driver
+//go get go.mongodb.org/mongo-driver/mongo
+//go get github.com/gin-contrib/cors
 import (
 	"context"
 	"fmt"

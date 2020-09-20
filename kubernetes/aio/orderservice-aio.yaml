@@ -1,20 +1,62 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world
+  name: order-service
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.21.0 ()
+  labels:
+    io.kompose.service: order-service
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      foo: bar
-  replicas: 1
+      io.kompose.service: order-service
+  strategy: {}
   template:
     metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.21.0 ()
+      creationTimestamp: null
       labels:
-        foo: bar
-    spec:
-      containers:
-        - name: hello-world
-          # This is the import path for the Go binary to build and run.
-          image: ko://github.com/mattmoor/examples/http/cmd/helloworld
-          ports:
-            - containerPort: 8080
+        io.kompose.network/test: "true"
+        io.kompose.service: order-service
+    spec:     # pod spec                  
+      containers: 
+      - env:
+        - name: APP_SETTING_ORIGIN
+          value: "*"
+        - name: APP_SETTING_DBURL
+          value: "mongodb://root:root@mongo:27017"
+        # - name: GIN_MODE
+        #   value: "release"
+        name: order-service
+        image: sansanvn/hellorepo:order-service
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+      restartPolicy: Always
+      serviceAccountName: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.21.0 ()
+    konghq.com/plugins: rl-by-ip
+  labels:
+    io.kompose.service: order-service
+  name: order-service
+spec:
+  ports:
+  - name: "5000"
+    port: 5000
+    targetPort: 5000
+    nodePort: 30020
+  selector:
+    io.kompose.service: order-service
+  type: NodePort
+status:
+  loadBalancer: {}

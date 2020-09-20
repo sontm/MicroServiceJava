@@ -4,6 +4,7 @@
 kubectl delete -f kubernetes/apigw/ingress-account-admin.yaml
 kubectl delete -f kubernetes/apigw/ingress-account-guest.yaml
 kubectl delete -f kubernetes/apigw/ingress-strapicms.yaml
+kubectl delete -f kubernetes/apigw/ingress-order.yaml
 
 # Then, Delete Plugin, Kong Ingress and Consumer
 kubectl delete -f kubernetes/apigw/plugin-rl-by-ip.yaml
